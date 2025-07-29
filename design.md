@@ -12,7 +12,6 @@ A minimal end-to-end proof-of-concept pipeline using multi-agents concept:
 
 This document covers high-level architecture, data flows, sequence diagrams, and implementation guidance.
 
----
 
 ## 2. Goals and Constraints
 
@@ -29,8 +28,6 @@ This document covers high-level architecture, data flows, sequence diagrams, and
 * Maximum prep time (e.g., ≤30 minutes).
 
 *Additional dietary restrictions and preferences (vegetarian, dairy-free, likes/dislikes) will be integrated in future iterations.
-
----
 
 ## 3. Architecture Overview
 
@@ -108,7 +105,6 @@ class Plan(BaseModel):
 }
 ```
 
----
 
 ## 5. Data Flow & Sequence Diagram
 
@@ -137,35 +133,7 @@ Return combined {recipe, nutrition}
                                    Show final output
 ```
 
----
 
-## 6. Technology Stack
 
-* **LangChain**: Orchestration, Chains & Agents
-* **OpenAI API**: GPT-4 for prompts
-* **Pydantic**: Data validation between steps
-
----
-
-## 7. Error Handling & Retries
-
-* **Prompt Parsing Errors:** Validate JSON; on failure, retry with a simplified prompt or default values.
-* **API Failures:** Retry up to 2× with exponential backoff. fallback to cached nutrition data.
-* **Timeouts:** Set per-call timeout (e.g. 15 s). abort gracefully and return an error message.
-
----
-
-## 8. Future Extensions
-
-* Integrate a **constraint solver** (e.g. OR-Tools) for precise macro/micronutrient matching.
-* Add **loop & feedback**: verify nutrition thresholds and adjust plan automatically.
-* Persist **user profiles** & **recipe history** in a database (SQLite, Redis).
-* Integrate with **MCP server** for context management.
-
----
-
-## 9. Conclusion
-
-This PoC establishes a clear, modular pipeline. Next step: implement the **Planning Agent** with a simple LangChain Chain, test JSON output, then wire the Chef and Nutrition Agents in sequence.
 
 
