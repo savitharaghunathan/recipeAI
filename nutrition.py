@@ -91,9 +91,6 @@ def compute_nutrition(recipe: Recipe) -> NutritionProfile:
     recipe_json = recipe.model_dump_json()
     raw: str = chain.invoke({"recipe_json": recipe_json}).strip()
     
-    # Debug: print the raw response to see what we're getting
-    print(f"DEBUG: Nutrition response length: {len(raw)}")
-    print(f"DEBUG: Nutrition response: {raw[:200]}...")
     
     data = _parse_json(raw)
 
