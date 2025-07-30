@@ -9,6 +9,8 @@ from models import Plan,Recipe
 llm = OpenAI(
     model= "gpt-4o-mini",
     temperature=0.7,
+    max_tokens=2000,  
+    timeout=30,  
 )
 
 prompt = PromptTemplate(
@@ -18,20 +20,22 @@ You are a skilled chef. Given this meal plan:
 
 {plan_json}
 
-Generate a JSON object matching this schema:
+Generate a complete JSON object matching this schema:
 
 {{
   "title": "string",
-  "prep_time": 0,
-  "cook_time": 0,
-  "servings": 0,
+  "prep_time": int,
+  "cook_time": int,
+  "servings": int,
   "ingredients": [
     {{ "item": "string", "qty": "string" }}
   ],
   "steps": ["string"]
 }}
 
-Only output the JSON.
+IMPORTANT: If the meal plan includes dietary needs (e.g., vegan, vegetarian), ensure your recipe and ingredients comply with those restrictions.
+
+CRITICAL: Return ONLY the JSON object. No other text, no explanations, no markdown formatting.
 """,
 )
 
@@ -47,6 +51,12 @@ def generate_recipe(plan: Plan) -> Recipe:
     # Invoke the chain
     raw: str = chain.invoke({"plan_json": plan_json}).strip()
     
+    # Check for empty response
+    if not raw:
+        raise ValueError("Chef returned an empty response. Please try again.")
+    
+
+    
     # Try direct JSON load, else extract substring
     try:
         data = json.loads(raw)
@@ -54,7 +64,10 @@ def generate_recipe(plan: Plan) -> Recipe:
         match = re.search(r"\{.*\}", raw, re.DOTALL)
         if not match:
             raise ValueError(f"Failed to parse JSON from chef output:\n{raw}")
-        data = json.loads(match.group(0))
+        try:
+            data = json.loads(match.group(0))
+        except json.JSONDecodeError:
+            raise ValueError(f"Failed to parse extracted JSON. Raw response:\n{raw}")
 
     # Validate against Recipe model
     try:

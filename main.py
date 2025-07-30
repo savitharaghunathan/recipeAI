@@ -17,12 +17,17 @@ def main():
         "--max-prep-time", type=int, required=True,
         help="Maximum preparation time in minutes"
     )
+    parser.add_argument(
+        "--dietary-needs", required=False,
+        help="Dietary needs (e.g., vegan, vegetarian, gluten-free)"
+    )
     args = parser.parse_args()
 
 
     constraints = UserNeeds(
         cuisine=args.cuisine,
-        max_prep_time=args.max_prep_time
+        max_prep_time=args.max_prep_time,
+        dietary_needs=args.dietary_needs
     )
     plan = generate_plan(constraints)
 

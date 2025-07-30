@@ -9,6 +9,7 @@ class UserNeeds(BaseModel):
     """
     cuisine: str
     max_prep_time: int
+    dietary_needs: str | None = None
 
 
 class Ingredient(BaseModel):
@@ -26,10 +27,12 @@ class Plan(BaseModel):
     Output from the Planning Agent.
     - meal: proposed dish name
     - ingredients: list of Ingredient objects
+    - dietary_needs: dietary restrictions to follow
     """
 
     meal: str
     ingredients: List[Ingredient]
+    dietary_needs: str | None = None
 
 class Recipe(BaseModel):
     """
@@ -50,9 +53,9 @@ class Recipe(BaseModel):
 class NutritionProfile(BaseModel):
     """
     Output from the Nutrition Agent.
-    - calories: total kcal
+    - calories: total kcal per serving
     - macros: dict of macros, e.g. {'carbs': 60, 'protein': 20, 'fat': 10}
-    - micros: dict of micronutrients, e.g. {'iron_mg': 4.5, 'vitamin_c_mg': 20}
+    - micros: dict of micronutrients, e.g. {'iron_mg': 4.5, 'vitamin_c_mg': 20, 'calcium_mg': 150, 'vitamin_a_mcg': 500}
     """
     calories: float
     macros: Dict[str, float]

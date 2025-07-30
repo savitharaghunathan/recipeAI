@@ -12,13 +12,14 @@ llm = OpenAI(model="gpt-4o-mini",
              temperature=0.9,
              )
 prompt = PromptTemplate(
-    input_variables=["cuisine", "max_prep_time"],
+    input_variables=["cuisine", "max_prep_time", "dietary_needs"],
     template="""
 You are a meal planner.
 
 User Constraints:
 - Cuisine: {cuisine}
 - Max prep time: {max_prep_time} minutes
+- Dietary needs: {dietary_needs}
 
 Produce exactly one JSON object, and nothing else, like:
 
@@ -27,8 +28,11 @@ Produce exactly one JSON object, and nothing else, like:
   "ingredients": [
     {{ "item": "red lentils", "qty": "100g" }},
     {{ "item": "spinach",     "qty": "50g"   }}
-  ]
+  ],
+  "dietary_needs": "vegan"
 }}
+
+IMPORTANT: If dietary needs are specified (e.g., vegan, vegetarian), ensure the meal and ingredients comply with those restrictions.
 
 Do NOT include any examples, explanation, or additional JSON objects—output only that one JSON.
 """,
@@ -41,6 +45,7 @@ def generate_plan(constraints: UserNeeds) -> Plan:
     raw = chain.invoke({
         "cuisine": constraints.cuisine,
         "max_prep_time": constraints.max_prep_time,
+        "dietary_needs": constraints.dietary_needs
     })
 
 
