@@ -106,34 +106,6 @@ class Plan(BaseModel):
 ```
 
 
-## 5. Data Flow & Sequence Diagram
-
-**Sequence:**
-
-```plaintext
-User Request
-   ↓
-[1] Planning Agent.generate_plan(request) → plan_json
-   ↓
-[2] Chef Agent.generate_recipe(plan_json) → recipe_json/text
-   ↓
-[3] Nutrition Agent.compute_nutrition(recipe_json) → nutrition_json
-   ↓
-Return combined {recipe, nutrition}
-```
-
-**Flowchart:**
-
-```plaintext
-┌──────────┐    ┌─────────────┐    ┌─────────────┐    ┌──────────────┐
-│ User     │ →─▶ │ Planner     │ →─▶ │ Chef        │ →─▶ │ Nutrition    │
-│ Input    │    │ Agent       │    │ Agent       │    │ Agent        │
-└──────────┘    └─────────────┘    └─────────────┘    └──────────────┘
-                                           ↓
-                                   Show final output
-```
-
-
 
 
 
