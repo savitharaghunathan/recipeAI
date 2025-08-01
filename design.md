@@ -1,6 +1,4 @@
-# Design: LangChain Multi-Agent Meal Planning Pipeline
-
----
+# Design: RecipeAI 
 
 ## 1. Introduction
 
@@ -10,7 +8,7 @@ A minimal end-to-end proof-of-concept pipeline using multi-agents concept:
 2. **Chef Agent**: Produces detailed recipe steps from the meal outline.
 3. **Nutrition Agent**: Computes nutritional breakdown of the generated recipe.
 
-This document covers high-level architecture, data flows, sequence diagrams, and implementation guidance.
+This document covers high-level architecture, data flows, and implementation steps.
 
 
 ## 2. Goals and Constraints
