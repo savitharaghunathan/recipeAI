@@ -1,4 +1,0 @@
-langchain>=0.0.100
-langchain-openai
-pydantic>=1.10.0
-httpx>=0.23.0
