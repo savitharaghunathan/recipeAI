@@ -13,7 +13,7 @@ An AI-powered recipe generator that finds recipes based on cuisine preferences, 
 
 1. Install dependencies:
 ```bash
-pip install -r requirements.txt
+uv sync
 ```
 
 2. Set up your OpenAI API key:
@@ -23,8 +23,17 @@ export OPENAI_API_KEY="your-api-key-here"
 
 3. Generate a recipe:
 ```bash
-python main.py --cuisine thai --max-prep-time 30 --dietary-needs vegan
+uv run main.py --cuisine thai --max-prep-time 30 --dietary-needs vegan
 ```
+
+## MCP Server
+
+The nutrition system uses an MCP (Model Context Protocol) server for nutrition calculations:
+
+- **Automatic startup**: MCP server starts automatically when generating recipes
+- **Automatic shutdown**: Server stops automatically after each recipe generation
+- **No manual management**: No need to manually start/stop the server
+- **Local operation**: Runs locally using TinyDB (348 nutrition foods database)
 
 ## Arguments
 
@@ -35,7 +44,7 @@ python main.py --cuisine thai --max-prep-time 30 --dietary-needs vegan
 ## Sample run
 
 ```bash
-$ python main.py --cuisine indian --max-prep-time 25 --dietary-needs vegan
+$ uv run main.py --cuisine indian --max-prep-time 25 --dietary-needs vegan
 ```
 output:
 

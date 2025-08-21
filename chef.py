@@ -1,17 +1,10 @@
 import json
 import re
-from langchain_openai import OpenAI
 from langchain.prompts import PromptTemplate
 from pydantic import ValidationError
 
-from models import Plan,Recipe
-
-llm = OpenAI(
-    model= "gpt-4o-mini",
-    temperature=0.7,
-    max_tokens=2000,  
-    timeout=30,  
-)
+from models import Plan, Recipe
+from llm_config import get_completion_llm
 
 prompt = PromptTemplate(
     input_variables=["plan_json"],
@@ -39,7 +32,9 @@ CRITICAL: Return ONLY the JSON object. No other text, no explanations, no markdo
 """,
 )
 
-chain = prompt | llm
+# Chain created dynamically with increased temperature for recipe variation
+def get_chef_chain():
+    return prompt | get_completion_llm(temperature=1.1)
 
 def generate_recipe(plan: Plan) -> Recipe:
     """
@@ -49,7 +44,7 @@ def generate_recipe(plan: Plan) -> Recipe:
     plan_json = plan.model_dump_json()
     
     # Invoke the chain
-    raw: str = chain.invoke({"plan_json": plan_json}).strip()
+    raw: str = get_chef_chain().invoke({"plan_json": plan_json}).strip()
     
     # Check for empty response
     if not raw:
