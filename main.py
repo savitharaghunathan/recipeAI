@@ -1,9 +1,9 @@
 import json
 import argparse
-from models import UserNeeds
-from planner import generate_plan
-from chef import generate_recipe
-from nutrition import compute_nutrition
+from src.models import UserNeeds
+from src.planner import generate_plan
+from src.chef import generate_recipe
+from src.nutrition import compute_nutrition
 
 
 def main():

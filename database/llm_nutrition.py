@@ -9,8 +9,12 @@ from pydantic import BaseModel, Field
 import json
 import sys
 import os
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from llm_config import get_chat_llm
+
+# Add project root to path
+project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, project_root)
+
+from src.llm_config import get_chat_llm
 
 class NutritionProfile(BaseModel):
     """Complete nutrition profile for an ingredient"""

@@ -3,8 +3,14 @@
 Test Recipe AI integration with MCP nutrition server
 """
 
-from models import Recipe, Ingredient
-from nutrition import compute_nutrition
+import sys
+import os
+
+# Add the project root to Python path
+project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, project_root)
+from src.models import Recipe, Ingredient
+from src.nutrition import compute_nutrition
 
 def test_integration():
     """Test Recipe AI with MCP nutrition calculation"""

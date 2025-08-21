@@ -3,8 +3,8 @@ import re
 from langchain.prompts import PromptTemplate
 from pydantic import ValidationError
 
-from models import Plan, Recipe
-from llm_config import get_completion_llm
+from src.models import Plan, Recipe
+from src.llm_config import get_completion_llm
 
 prompt = PromptTemplate(
     input_variables=["plan_json"],

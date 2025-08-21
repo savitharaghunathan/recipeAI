@@ -5,12 +5,15 @@ Comprehensive tests for nutrition system
 
 import sys
 import os
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+# Add the project root to Python path
+project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, project_root)
 
 import asyncio
-from models import Recipe, Ingredient
-from nutrition import compute_nutrition
-from nutrition_mcp_client import NutritionMCPClient
+from src.models import Recipe, Ingredient
+from src.nutrition import compute_nutrition
+from nutrition_mcp.nutrition_mcp_client import NutritionMCPClient
 
 def test_mcp_server_connection():
     """Test basic MCP server connection"""

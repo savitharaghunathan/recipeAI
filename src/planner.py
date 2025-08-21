@@ -5,8 +5,8 @@ from typing import Any, Dict
 from langchain.prompts import PromptTemplate
 from pydantic import ValidationError
 
-from models import UserNeeds, Plan
-from llm_config import get_completion_llm
+from src.models import UserNeeds, Plan
+from src.llm_config import get_completion_llm
 prompt = PromptTemplate(
     input_variables=["cuisine", "max_prep_time", "dietary_needs"],
     template="""
