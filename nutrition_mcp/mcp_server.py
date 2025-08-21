@@ -7,8 +7,14 @@ Provides nutrition data from TinyDB as MCP resources and tools for AI agents.
 
 import json
 import asyncio
+import sys
+import os
 from typing import Any, Dict, List, Optional
 from pathlib import Path
+
+# Add project root to path
+project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, project_root)
 
 from mcp.server import Server, NotificationOptions
 from mcp.server.models import InitializationOptions

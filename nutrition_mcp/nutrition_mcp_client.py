@@ -7,12 +7,12 @@ import json
 import asyncio
 import subprocess
 from typing import Dict, List, Any, Optional
-from models import Recipe, NutritionProfile
+from src.models import Recipe, NutritionProfile
 
 class NutritionMCPClient:
     """MCP client using JSON-RPC protocol"""
     
-    def __init__(self, server_script: str = "mcp_server.py"):
+    def __init__(self, server_script: str = "nutrition_mcp/mcp_server.py"):
         self.server_script = server_script
         self.server_process = None
         self.request_id = 1
