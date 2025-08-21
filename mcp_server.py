@@ -31,43 +31,6 @@ class NutritionMCPServer:
     def _register_handlers(self):
         """Register all MCP handlers"""
         
-        @self.server.list_resources()
-        async def handle_list_resources() -> list[types.Resource]:
-            """List available resources"""
-            return [
-                types.Resource(
-                    uri="nutrition://database",
-                    name="Nutrition Database",
-                    description="Complete nutrition database with USDA foods and LLM estimates",
-                    mimeType="application/json"
-                )
-            ]
-        
-        @self.server.read_resource()
-        async def handle_read_resource(uri: types.AnyUrl) -> str:
-            """Read nutrition database resource"""
-            if str(uri) == "nutrition://database":
-                # Return database stats and sample foods
-                if not self.nutrition_db:
-                    self.nutrition_db = NutritionDB(self.db_path)
-                
-                stats = self.nutrition_db.get_database_stats()
-                
-                # Get sample foods from each source
-                usda_samples = self.nutrition_db.get_foods_by_source("usda")[:3]
-                llm_samples = self.nutrition_db.get_foods_by_source("llm_estimate")[:3]
-                
-                resource_data = {
-                    "database_stats": stats,
-                    "sample_usda_foods": usda_samples,
-                    "sample_llm_foods": llm_samples,
-                    "description": "TinyDB-based nutrition database with fuzzy matching and LLM integration"
-                }
-                
-                return json.dumps(resource_data, indent=2)
-            else:
-                raise ValueError(f"Unknown resource: {uri}")
-        
         @self.server.list_tools()
         async def handle_list_tools() -> list[types.Tool]:
             """List available tools"""

@@ -5,6 +5,9 @@ Test MCP server communication
 
 import asyncio
 import json
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from nutrition_mcp_client import NutritionMCPClient
 
 async def test_mcp():
