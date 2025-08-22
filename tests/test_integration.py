@@ -59,7 +59,7 @@ def test_integration():
         print(f"Calories per serving: {nutrition.calories / recipe.servings:.1f}")
         print(f"Protein per serving: {nutrition.macros['protein'] / recipe.servings:.1f}g")
         
-        print("\n✓ Recipe AI with MCP nutrition server working!")
+        print("\n Recipe AI with MCP nutrition server working!")
         
     except Exception as e:
         print(f"✗ Test failed: {e}")

@@ -26,10 +26,10 @@ def test_mcp_server_connection():
             result = await client.call_tool("get_database_stats", {})
             assert "database_statistics" in result
             assert result["database_statistics"]["total_foods"] > 300
-            print("✓ MCP server connection successful")
+            print(" MCP server connection successful")
             return True
         except Exception as e:
-            print(f"✗ MCP server connection failed: {e}")
+            print(f" MCP server connection failed: {e}")
             return False
         finally:
             await client.stop_server()
@@ -61,11 +61,11 @@ def test_recipe_nutrition_calculation():
         assert nutrition.macros['fat'] > 0, "Fat should be > 0 (coconut milk)"
         assert nutrition.micros['vitamin_c_mg'] > 0, "Vitamin C should be > 0 (lime juice)"
         
-        print(f"✓ Recipe nutrition: {nutrition.calories} cal, {nutrition.macros['protein']}g protein")
+        print(f" Recipe nutrition: {nutrition.calories} cal, {nutrition.macros['protein']}g protein")
         return True
         
     except Exception as e:
-        print(f"✗ Recipe nutrition calculation failed: {e}")
+        print(f" Recipe nutrition calculation failed: {e}")
         return False
 
 def test_ingredient_lookup():
@@ -87,11 +87,11 @@ def test_ingredient_lookup():
             assert result["results_found"] > 0
             assert "matches" in result
             
-            print(f"✓ Found {result['results_found']} matches for coconut milk")
+            print(f" Found {result['results_found']} matches for coconut milk")
             return True
             
         except Exception as e:
-            print(f"✗ Ingredient lookup failed: {e}")
+            print(f" Ingredient lookup failed: {e}")
             return False
         finally:
             await client.stop_server()
@@ -120,7 +120,7 @@ def test_database_stats():
             return True
             
         except Exception as e:
-            print(f"✗ Database stats failed: {e}")
+            print(f" Database stats failed: {e}")
             return False
         finally:
             await client.stop_server()
@@ -146,7 +146,7 @@ def run_all_tests():
             if test():
                 passed += 1
         except Exception as e:
-            print(f"✗ Test {test.__name__} crashed: {e}")
+            print(f" Test {test.__name__} crashed: {e}")
         print()
     
     print(f"=== Results: {passed}/{total} tests passed ===")

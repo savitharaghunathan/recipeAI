@@ -23,11 +23,11 @@ async def test_mcp():
     try:
         print("Starting server...")
         await client.start_server()
-        print("✓ Server started")
+        print(" Server started")
         
         print("Testing tool call...")
         result = await client.call_tool("get_database_stats", {})
-        print(f"✓ Tool call successful: {result}")
+        print(f" Tool call successful: {result}")
         
     except Exception as e:
         print(f"✗ Error: {e}")

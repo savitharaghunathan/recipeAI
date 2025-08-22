@@ -44,7 +44,7 @@ The nutrition system uses an MCP (Model Context Protocol) server for nutrition c
 ## Sample run
 
 ```bash
-$ uv run main.py --cuisine indian --max-prep-time 25 --dietary-needs vegan
+$ uv run recipe-ai --cuisine indian --max-prep-time 25 --dietary-needs vegan
 ```
 output:
 
