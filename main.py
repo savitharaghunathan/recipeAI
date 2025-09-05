@@ -74,10 +74,16 @@ async def run_cuisine_mode(args):
             await MCPClientManager.stop_server()
             raise
         
+        # Define units for micronutrients
+        mcg_nutrients = {"vitamin_a_mcg", "vitamin_d_mcg", "vitamin_k_mcg", "folate_mcg", "vitamin_b12_mcg"}
+        
         formatted_nutrition = {
             "calories": f"{nutrition.calories} kcal",
             "macros": {k: f"{v} g" for k, v in nutrition.macros.items()},
-            "micros": {k: f"{v} mg" for k, v in nutrition.micros.items()},
+            "micros": {
+                k: f"{v} mcg" if k in mcg_nutrients else f"{v} mg"
+                for k, v in nutrition.micros.items()
+            },
         }
 
         output = {
@@ -107,10 +113,16 @@ async def run_ingredient_mode(args):
             await MCPClientManager.stop_server()
             raise
         
+        # Define units for micronutrients
+        mcg_nutrients = {"vitamin_a_mcg", "vitamin_d_mcg", "vitamin_k_mcg", "folate_mcg", "vitamin_b12_mcg"}
+        
         formatted_nutrition = {
             "calories": f"{nutrition.calories} kcal",
             "macros": {k: f"{v} g" for k, v in nutrition.macros.items()},
-            "micros": {k: f"{v} mg" for k, v in nutrition.micros.items()},
+            "micros": {
+                k: f"{v} mcg" if k in mcg_nutrients else f"{v} mg"
+                for k, v in nutrition.micros.items()
+            },
         }
 
         output = {

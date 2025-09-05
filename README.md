@@ -212,108 +212,109 @@ uv run main.py --mode ingredient --request "high protein vegetarian recipe with 
 
 
 > Entering new AgentExecutor chain...
-Thought: I need to find potato and broccoli in the nutrition database
+Thought: I need to find broccoli and potatoes in the nutrition database
 Action: find_ingredient
-Action Input: {"ingredient_name": "potato", "max_results": 3}{'ingredient_searched': 'potato', 'results_found': 3, 'matches': [{'ash_g': 3.06, 'calcium_mg': 42.6, 'calories': 353.0, 'carbs': 79.9, 'copper_mg': 0.208, 'description': 'Flour, potato', 'fat': 0.965, 'fiber': 6.35, 'folate_mcg': 45.4, 'food_class': 'FinalFood', 'iron_mg': 1.48, 'magnesium_mg': 84.0, 'manganese_mg': 0.611, 'niacin_mg': 6.9, 'nutrition_per': '100g', 'phosphorus_mg': 220.0, 'potassium_mg': 1520.0, 'protein': 9.14, 'riboflavin_mg': 0.13, 'sodium_mg': 17.2, 'thiamin_mg': 0.232, 'vitamin_b6_mg': 0.708, 'water_g': 6.79, 'zinc_mg': 0.944, 'food_id': 'flour_potato_174', 'source': 'usda', 'confidence': 1.0, 'match_score': 1.0}, {'ash_g': 0.915, 'calcium_mg': 5.67, 'calories': 71.6, 'carbs': 16.0, 'copper_mg': 0.13, 'description': 'Potatoes, gold, without skin, raw', 'fat': 0.225, 'food_class': 'FinalFood', 'iron_mg': 0.371, 'magnesium_mg': 22.4, 'manganese_mg': 0.148, 'niacin_mg': 1.58, 'nutrition_per': '100g', 'phosphorus_mg': 62.4, 'potassium_mg': 440.0, 'protein': 1.75, 'sugars_total': 0.645, 'thiamin_mg': 0.05, 'vitamin_b6_mg': 0.134, 'vitamin_c_mg': 23.8, 'vitamin_k_mcg': 0.7, 'water_g': 81.0, 'zinc_mg': 0.364, 'food_id': 'potatoes_gold_without_skin_raw_198', 'source': 'usda', 'confidence': 1.0, 'match_score': 1.0}, {'ash_g': 0.94, 'calcium_mg': 4.82, 'calories': 73.4, 'carbs': 16.3, 'copper_mg': 0.109, 'description': 'Potatoes, red, without skin, raw', 'fat': 0.295, 'food_class': 'FinalFood', 'iron_mg': 0.363, 'magnesium_mg': 21.8, 'manganese_mg': 0.174, 'niacin_mg': 1.38, 'nutrition_per': '100g', 'phosphorus_mg': 50.6, 'potassium_mg': 466.0, 'protein': 2.06, 'sodium_mg': 1.8, 'sugars_total': 0.664, 'thiamin_mg': 0.065, 'vitamin_b6_mg': 0.12, 'vitamin_c_mg': 21.8, 'vitamin_k_mcg': 0.7, 'water_g': 81.1, 'zinc_mg': 0.398, 'food_id': 'potatoes_red_without_skin_raw_197', 'source': 'usda', 'confidence': 1.0, 'match_score': 1.0}]} I also need to find broccoli in the nutrition database
+Action Input: {"ingredient_name": "broccoli", "max_results": 3}{'ingredient_searched': 'broccoli', 'results_found': 1, 'matches': [{'alcohol_g': 0.059, 'ash_g': 0.83, 'calcium_mg': 46.0, 'calories': 31.0, 'carbs': 6.27, 'copper_mg': 0.063, 'description': 'Broccoli, raw', 'energy_kj': 132.0, 'fat': 0.34, 'fiber': 2.5, 'folate_mcg': 45.0, 'food_class': 'FinalFood', 'iron_mg': 0.63, 'magnesium_mg': 21.0, 'manganese_mg': 0.197, 'monounsaturated_fat_g': 0.011, 'niacin_mg': 0.609, 'nutrition_per': '100g', 'pantothenic_acid_mg': 0.62, 'phosphorus_mg': 66.0, 'polyunsaturated_fat_g': 0.017, 'potassium_mg': 306.0, 'protein': 2.57, 'riboflavin_mg': 0.112, 'saturated_fat_g': 0.039, 'selenium_mcg': 1.7, 'serving_sizes': [{'amount': 1.0, 'grams': 76.0, 'unit': 'cup'}], 'sodium_mg': 37.0, 'sugars_total': 1.4, 'thiamin_mg': 0.074, 'vitamin_a_mcg': 8.0, 'vitamin_b6_mg': 0.195, 'vitamin_c_mg': 99.3, 'vitamin_e_mg': 0.15, 'vitamin_k_mcg': 98.7, 'water_g': 90.3, 'zinc_mg': 0.42, 'food_id': 'broccoli_raw_091', 'source': 'usda', 'confidence': 1.0, 'match_score': 1.0}]} I found broccoli with protein content. Now I need to find potatoes.
 Action: find_ingredient
-Action Input: {"ingredient_name": "broccoli", "max_results": 3}{'ingredient_searched': 'broccoli', 'results_found': 1, 'matches': [{'alcohol_g': 0.059, 'ash_g': 0.83, 'calcium_mg': 46.0, 'calories': 31.0, 'carbs': 6.27, 'copper_mg': 0.063, 'description': 'Broccoli, raw', 'energy_kj': 132.0, 'fat': 0.34, 'fiber': 2.5, 'folate_mcg': 45.0, 'food_class': 'FinalFood', 'iron_mg': 0.63, 'magnesium_mg': 21.0, 'manganese_mg': 0.197, 'monounsaturated_fat_g': 0.011, 'niacin_mg': 0.609, 'nutrition_per': '100g', 'pantothenic_acid_mg': 0.62, 'phosphorus_mg': 66.0, 'polyunsaturated_fat_g': 0.017, 'potassium_mg': 306.0, 'protein': 2.57, 'riboflavin_mg': 0.112, 'saturated_fat_g': 0.039, 'selenium_mcg': 1.7, 'serving_sizes': [{'amount': 1.0, 'grams': 76.0, 'unit': 'cup'}], 'sodium_mg': 37.0, 'sugars_total': 1.4, 'thiamin_mg': 0.074, 'vitamin_a_mcg': 8.0, 'vitamin_b6_mg': 0.195, 'vitamin_c_mg': 99.3, 'vitamin_e_mg': 0.15, 'vitamin_k_mcg': 98.7, 'water_g': 90.3, 'zinc_mg': 0.42, 'food_id': 'broccoli_raw_091', 'source': 'usda', 'confidence': 1.0, 'match_score': 1.0}]} Now that I have the necessary ingredients, I'll create a simple high-protein vegetarian recipe using potatoes, broccoli, and one additional ingredient for flavor.
-Final Answer: {"meal": "High Protein Broccoli and Potato Bake", "ingredients": [{"item": "potatoes", "qty": "300g"}, {"item": "broccoli", "qty": "200g"}, {"item": "cheese", "qty": "100g"}], "dietary_needs": "high protein vegetarian"}
+Action Input: {"ingredient_name": "potato", "max_results": 3}{'ingredient_searched': 'potato', 'results_found': 3, 'matches': [{'ash_g': 3.06, 'calcium_mg': 42.6, 'calories': 353.0, 'carbs': 79.9, 'copper_mg': 0.208, 'description': 'Flour, potato', 'fat': 0.965, 'fiber': 6.35, 'folate_mcg': 45.4, 'food_class': 'FinalFood', 'iron_mg': 1.48, 'magnesium_mg': 84.0, 'manganese_mg': 0.611, 'niacin_mg': 6.9, 'nutrition_per': '100g', 'phosphorus_mg': 220.0, 'potassium_mg': 1520.0, 'protein': 9.14, 'riboflavin_mg': 0.13, 'sodium_mg': 17.2, 'thiamin_mg': 0.232, 'vitamin_b6_mg': 0.708, 'water_g': 6.79, 'zinc_mg': 0.944, 'food_id': 'flour_potato_174', 'source': 'usda', 'confidence': 1.0, 'match_score': 1.0}, {'ash_g': 0.915, 'calcium_mg': 5.67, 'calories': 71.6, 'carbs': 16.0, 'copper_mg': 0.13, 'description': 'Potatoes, gold, without skin, raw', 'fat': 0.225, 'food_class': 'FinalFood', 'iron_mg': 0.371, 'magnesium_mg': 22.4, 'manganese_mg': 0.148, 'niacin_mg': 1.58, 'nutrition_per': '100g', 'phosphorus_mg': 62.4, 'potassium_mg': 440.0, 'protein': 1.75, 'sugars_total': 0.645, 'thiamin_mg': 0.05, 'vitamin_b6_mg': 0.134, 'vitamin_c_mg': 23.8, 'vitamin_k_mcg': 0.7, 'water_g': 81.0, 'zinc_mg': 0.364, 'food_id': 'potatoes_gold_without_skin_raw_198', 'source': 'usda', 'confidence': 1.0, 'match_score': 1.0}, {'ash_g': 0.94, 'calcium_mg': 4.82, 'calories': 73.4, 'carbs': 16.3, 'copper_mg': 0.109, 'description': 'Potatoes, red, without skin, raw', 'fat': 0.295, 'food_class': 'FinalFood', 'iron_mg': 0.363, 'magnesium_mg': 21.8, 'manganese_mg': 0.174, 'niacin_mg': 1.38, 'nutrition_per': '100g', 'phosphorus_mg': 50.6, 'potassium_mg': 466.0, 'protein': 2.06, 'sodium_mg': 1.8, 'sugars_total': 0.664, 'thiamin_mg': 0.065, 'vitamin_b6_mg': 0.12, 'vitamin_c_mg': 21.8, 'vitamin_k_mcg': 0.7, 'water_g': 81.1, 'zinc_mg': 0.398, 'food_id': 'potatoes_red_without_skin_raw_197', 'source': 'usda', 'confidence': 1.0, 'match_score': 1.0}]} I have found the nutrition info for both broccoli and potatoes. I will create a simple high protein vegetarian recipe using these ingredients.
+Final Answer: {"meal": "High Protein Vegetarian Potatoes and Broccoli", "ingredients": [{"item": "potatoes", "qty": "400g"}, {"item": "broccoli", "qty": "300g"}, {"item": "olive oil", "qty": "2 tbsp"}, {"item": "salt", "qty": "1 tsp"}], "dietary_needs": "high protein vegetarian"}
 
 > Finished chain.
 {
   "plan": {
-    "meal": "High Protein Broccoli and Potato Bake",
+    "meal": "High Protein Vegetarian Potatoes and Broccoli",
     "ingredients": [
       {
         "item": "potatoes",
-        "qty": "300g"
+        "qty": "400g"
       },
       {
         "item": "broccoli",
-        "qty": "200g"
+        "qty": "300g"
       },
       {
-        "item": "cheese",
-        "qty": "100g"
+        "item": "olive oil",
+        "qty": "2 tbsp"
+      },
+      {
+        "item": "salt",
+        "qty": "1 tsp"
       }
     ],
     "dietary_needs": "high protein vegetarian"
   },
   "recipe": {
-    "title": "High Protein Broccoli and Potato Bake with Cheese and Tofu",
+    "title": "High Protein Vegetarian Potatoes and Broccoli with Chickpeas",
     "prep_time": 15,
     "cook_time": 30,
     "ingredients": [
       {
         "item": "potatoes",
-        "qty": "300g"
+        "qty": "400g"
       },
       {
         "item": "broccoli",
-        "qty": "200g"
-      },
-      {
-        "item": "cheese",
-        "qty": "100g"
-      },
-      {
-        "item": "firm tofu",
-        "qty": "200g"
+        "qty": "300g"
       },
       {
         "item": "olive oil",
-        "qty": "1 tbsp"
-      },
-      {
-        "item": "garlic",
-        "qty": "2 cloves"
+        "qty": "2 tbsp"
       },
       {
         "item": "salt",
-        "qty": "to taste"
+        "qty": "1 tsp"
       },
       {
-        "item": "pepper",
-        "qty": "to taste"
+        "item": "canned chickpeas",
+        "qty": "1 can (400g) drained and rinsed"
+      },
+      {
+        "item": "black pepper",
+        "qty": "1/2 tsp"
+      },
+      {
+        "item": "garlic powder",
+        "qty": "1 tsp"
       }
     ],
     "steps": [
-      "Preheat the oven to 200\u00b0C (400\u00b0F).",
-      "Peel and chop the potatoes into small cubes, and then steam the broccoli until tender.",
-      "In a pan, heat olive oil over medium heat, then saut\u00e9 minced garlic until fragrant.",
-      "Add the cubed potatoes and saut\u00e9 until golden brown, about 10 minutes.",
-      "Crumble the firm tofu into the pan and cook for an additional 5 minutes.",
-      "Add the steamed broccoli, and mix everything together, seasoning with salt and pepper to taste.",
-      "Transfer the mixture to a baking dish, sprinkle cheese on top, and bake for 15 minutes until the cheese is melted and bubbly.",
-      "Allow to cool for a few minutes before serving."
+      "Preheat your oven to 200\u00b0C (400\u00b0F).",
+      "Wash and cut the potatoes into bite-sized cubes.",
+      "In a large mixing bowl, combine the potatoes, olive oil, salt, black pepper, and garlic powder. Toss until evenly coated.",
+      "Spread the potatoes in a single layer on a baking sheet and roast for 20 minutes until golden brown.",
+      "While the potatoes are roasting, chop the broccoli into florets.",
+      "In the last 10 minutes of roasting, add the broccoli florets to the baking sheet with the potatoes.",
+      "In a separate pot, heat the rinsed chickpeas over medium heat until warmed through, about 5 minutes.",
+      "Remove the potatoes and broccoli from the oven and combine with the warmed chickpeas in a serving bowl.",
+      "Serve warm and enjoy your high protein vegetarian meal."
     ],
     "servings": 4
   },
   "nutrition": {
-    "calories": "644.16 kcal",
+    "calories": "106.32 kcal",
     "macros": {
-      "protein": "38.37 g",
-      "fat": "122.07 g",
-      "carbs": "36.76 g"
+      "protein": "4.53 g",
+      "fat": "1.44 g",
+      "carbs": "22.87 g"
     },
     "micros": {
-      "iron_mg": "4.22 mg",
-      "vitamin_c_mg": "219.49 mg",
-      "calcium_mg": "1268.59 mg",
-      "vitamin_a_mcg": "766.0 mg",
-      "vitamin_d_mcg": "0.4 mg",
-      "vitamin_e_mg": "0.34 mg",
-      "vitamin_k_mcg": "99.62 mg",
-      "thiamin_mg": "0.16 mg",
-      "riboflavin_mg": "0.2 mg",
-      "niacin_mg": "2.81 mg",
-      "vitamin_b6_mg": "0.57 mg",
-      "folate_mcg": "69.4 mg",
-      "vitamin_b12_mcg": "0.0 mg",
-      "zinc_mg": "3.33 mg",
-      "magnesium_mg": "137.21 mg",
-      "potassium_mg": "1118.0 mg",
-      "sodium_mg": "2168.0 mg"
+      "iron_mg": "1.05 mg",
+      "vitamin_c_mg": "123.1 mg",
+      "calcium_mg": "53.02 mg",
+      "vitamin_a_mcg": "15.58 mcg",
+      "vitamin_d_mcg": "0.0 mcg",
+      "vitamin_e_mg": "0.53 mg",
+      "vitamin_k_mcg": "99.83 mcg",
+      "thiamin_mg": "0.12 mg",
+      "riboflavin_mg": "0.11 mg",
+      "niacin_mg": "2.19 mg",
+      "vitamin_b6_mg": "0.33 mg",
+      "folate_mcg": "45.05 mcg",
+      "vitamin_b12_mcg": "0.0 mcg",
+      "zinc_mg": "0.82 mg",
+      "magnesium_mg": "44.77 mg",
+      "potassium_mg": "757.02 mg",
+      "sodium_mg": "42.27 mg"
     }
   }
 }
