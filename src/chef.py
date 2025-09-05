@@ -29,6 +29,11 @@ Generate a complete JSON object matching this schema:
 
 IMPORTANT: If the meal plan includes dietary needs (e.g., vegan, vegetarian), ensure your recipe and ingredients comply with those restrictions.
 
+NUTRITIONAL SAFETY: Ensure your recipe produces reasonable nutrition levels:
+- Fat content should be moderate (typically 10-50g per meal)
+- Sodium should be reasonable (under 2000mg per meal)
+- Avoid excessive amounts of any single ingredient that could create nutritional imbalances
+
 CRITICAL: Return ONLY the JSON object. No other text, no explanations, no markdown formatting.
 """,
 )
