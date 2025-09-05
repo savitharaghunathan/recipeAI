@@ -61,14 +61,18 @@ async def run_cuisine_mode(args):
     try:
         await MCPClientManager.start_server()
         
-        constraints = UserNeeds(
-            cuisine=args.cuisine,
-            max_prep_time=args.max_prep_time,
-            dietary_needs=args.dietary_needs
-        )
-        plan = generate_plan(constraints)
-        recipe = generate_recipe(plan)
-        nutrition = compute_nutrition(recipe)
+        try:
+            constraints = UserNeeds(
+                cuisine=args.cuisine,
+                max_prep_time=args.max_prep_time,
+                dietary_needs=args.dietary_needs
+            )
+            plan = generate_plan(constraints)
+            recipe = generate_recipe(plan)
+            nutrition = await compute_nutrition(recipe)
+        except Exception:
+            await MCPClientManager.stop_server()
+            raise
         
         formatted_nutrition = {
             "calories": f"{nutrition.calories} kcal",
@@ -92,12 +96,16 @@ async def run_ingredient_mode(args):
     try:
         await MCPClientManager.start_server()
         
-        plan = generate_ingredient_plan(args.request)
-        
-        nutrition_goals = args.nutrition_goals or "balanced nutrition"
-        recipe = generate_nutrition_aware_recipe(plan, nutrition_goals)
-        
-        nutrition = compute_nutrition(recipe)
+        try:
+            plan = generate_ingredient_plan(args.request)
+            
+            nutrition_goals = args.nutrition_goals or "balanced nutrition"
+            recipe = generate_nutrition_aware_recipe(plan, nutrition_goals)
+            
+            nutrition = await compute_nutrition(recipe)
+        except Exception:
+            await MCPClientManager.stop_server()
+            raise
         
         formatted_nutrition = {
             "calories": f"{nutrition.calories} kcal",
