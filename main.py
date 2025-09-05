@@ -6,7 +6,7 @@ from src.planner import generate_plan
 from src.chef import generate_recipe, generate_nutrition_aware_recipe
 from src.nutrition import compute_nutrition
 from src.ingredient_planner import generate_ingredient_plan
-from src.mcp_tools import SyncMCPClientManager
+from src.mcp_tools import MCPClientManager
 
 
 def main():
@@ -66,7 +66,7 @@ def main():
         
     elif args.mode == "ingredient":
         # New ingredient-based workflow with AI agents
-        run_ingredient_mode(args)
+        asyncio.run(run_ingredient_mode(args))
         return
     
     # Format and output results (cuisine mode)
@@ -84,11 +84,11 @@ def main():
     print(json.dumps(output, indent=2))
 
 
-def run_ingredient_mode(args):
+async def run_ingredient_mode(args):
     """Run ingredient-based recipe generation with AI agents"""
     try:
         # Start MCP server
-        SyncMCPClientManager.start_server()
+        await MCPClientManager.start_server()
         
         # Generate plan using ingredient planner agent
         plan = generate_ingredient_plan(args.request)
@@ -116,7 +116,7 @@ def run_ingredient_mode(args):
         
     finally:
         # Always stop MCP server
-        SyncMCPClientManager.stop_server()
+        await MCPClientManager.stop_server()
 
 if __name__ == "__main__":
     main()

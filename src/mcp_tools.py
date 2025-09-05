@@ -3,16 +3,18 @@ MCP wrapper for nutrition tools
 """
 
 import json
-from nutrition_mcp.sync_mcp_client import SyncNutritionMCPClient
+import asyncio
+from nutrition_mcp.mcp_client import AsyncNutritionMCPClient
 from langchain.tools import BaseTool
 from typing import Any, Dict, List, Optional
+import nest_asyncio
 
 
-class SyncMCPClientManager:
-    """Singleton manager for sync MCP client"""
+class MCPClientManager:
+    """Singleton manager for async MCP client"""
     
     _instance = None
-    _client: Optional[SyncNutritionMCPClient] = None
+    _client: Optional[AsyncNutritionMCPClient] = None
     
     def __new__(cls):
         if cls._instance is None:
@@ -20,21 +22,21 @@ class SyncMCPClientManager:
         return cls._instance
     
     @classmethod
-    def start_server(cls):
+    async def start_server(cls):
         """Start MCP server and client"""
         if cls._client is None:
-            cls._client = SyncNutritionMCPClient()
-            cls._client.start_server()
+            cls._client = AsyncNutritionMCPClient()
+            await cls._client.start_server()
     
     @classmethod
-    def stop_server(cls):
+    async def stop_server(cls):
         """Stop MCP server and client"""
         if cls._client is not None:
-            cls._client.stop_server()
+            await cls._client.stop_server()
             cls._client = None
     
     @classmethod
-    def get_client(cls) -> SyncNutritionMCPClient:
+    def get_client(cls) -> AsyncNutritionMCPClient:
         """Get the running MCP client"""
         if cls._client is None:
             raise RuntimeError("MCP client not started. Call start_server() first.")
@@ -58,11 +60,13 @@ class FindIngredientTool(BaseTool):
             ingredient_name = params.get("ingredient_name")
             max_results = params.get("max_results", 5)
             
-            client = SyncMCPClientManager.get_client()
-            result = client.call_tool(
+            client = MCPClientManager.get_client()
+            # Use nest_asyncio to allow nested event loops
+            nest_asyncio.apply()
+            result = asyncio.run(client.call_tool(
                 "find_ingredient", 
                 {"ingredient_name": ingredient_name, "max_results": max_results}
-            )
+            ))
             return str(result)
         except Exception as e:
             return f"Error finding ingredient: {str(e)}"
@@ -95,11 +99,12 @@ class CalculateRecipeNutritionTool(BaseTool):
             if isinstance(ingredients_data, str):
                 ingredients_data = json.loads(ingredients_data)
                 
-            client = SyncMCPClientManager.get_client()
-            result = client.call_tool(
+            client = MCPClientManager.get_client()
+            nest_asyncio.apply()
+            result = asyncio.run(client.call_tool(
                 "calculate_recipe_nutrition",
                 {"ingredients": ingredients_data}
-            )
+            ))
             return str(result)
         except Exception as e:
             return f"Error calculating recipe nutrition: {str(e)}"
@@ -121,11 +126,12 @@ class GetHighProteinFoodsTool(BaseTool):
             
             min_protein = params.get("min_protein", 20.0)
             
-            client = SyncMCPClientManager.get_client()
-            result = client.call_tool(
+            client = MCPClientManager.get_client()
+            nest_asyncio.apply()
+            result = asyncio.run(client.call_tool(
                 "get_high_protein_foods",
                 {"min_protein": min_protein}
-            )
+            ))
             return str(result)
         except Exception as e:
             return f"Error getting high protein foods: {str(e)}"
@@ -147,11 +153,12 @@ class SearchIngredientsTool(BaseTool):
             
             description = params.get("description")
             
-            client = SyncMCPClientManager.get_client()
-            result = client.call_tool(
+            client = MCPClientManager.get_client()
+            nest_asyncio.apply()
+            result = asyncio.run(client.call_tool(
                 "search_ingredients",
                 {"description": description}
-            )
+            ))
             return str(result)
         except Exception as e:
             return f"Error searching ingredients: {str(e)}"

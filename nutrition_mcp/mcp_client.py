@@ -1,38 +1,37 @@
 #!/usr/bin/env python3
 """
-Synchronous MCP Client for nutrition operations using blocking subprocess communication
+Async MCP Client for nutrition operations using async subprocess communication
 """
 
 import json
+import asyncio
 import subprocess
 from typing import Dict, Any
 from src.models import Recipe
 
 
-class SyncNutritionMCPClient:
-    """Synchronous MCP client using blocking subprocess communication"""
+class AsyncNutritionMCPClient:
+    """Async MCP client using async subprocess communication"""
     
     def __init__(self, server_script: str = "nutrition_mcp/mcp_server.py"):
         self.server_script = server_script
         self.server_process = None
         self.request_id = 1
     
-    def start_server(self):
+    async def start_server(self):
         """Start the MCP server process"""
-        self.server_process = subprocess.Popen(
-            ["uv", "run", "python", self.server_script],
-            stdin=subprocess.PIPE,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-            bufsize=0,  # Unbuffered for immediate I/O
+        self.server_process = await asyncio.create_subprocess_exec(
+            "uv", "run", "python", self.server_script,
+            stdin=asyncio.subprocess.PIPE,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE,
             cwd="."
         )
         
         # Initialize MCP connection
-        self._initialize_connection()
+        await self._initialize_connection()
     
-    def _initialize_connection(self):
+    async def _initialize_connection(self):
         """Initialize MCP connection with handshake"""
         # Send initialize request
         init_request = {
@@ -51,7 +50,7 @@ class SyncNutritionMCPClient:
             }
         }
         
-        init_response = self._send_request(init_request)
+        init_response = await self._send_request(init_request)
         
         if "error" in init_response:
             raise RuntimeError(f"MCP initialization failed: {init_response['error']}")
@@ -61,7 +60,7 @@ class SyncNutritionMCPClient:
             "jsonrpc": "2.0",
             "method": "notifications/initialized"
         }
-        self._send_notification(initialized_notification)
+        await self._send_notification(initialized_notification)
     
     def _next_id(self) -> int:
         """Get next request ID"""
@@ -69,24 +68,24 @@ class SyncNutritionMCPClient:
         self.request_id += 1
         return current
     
-    def _send_request(self, request: Dict) -> Dict:
+    async def _send_request(self, request: Dict) -> Dict:
         """Send request to MCP server and get response"""
         if not self.server_process:
             raise RuntimeError("Server not started")
         
         # Send request
         request_str = json.dumps(request) + "\n"
-        self.server_process.stdin.write(request_str)
-        self.server_process.stdin.flush()
+        self.server_process.stdin.write(request_str.encode())
+        await self.server_process.stdin.drain()
         
         # Read response
         while True:
-            line = self.server_process.stdout.readline()
+            line = await self.server_process.stdout.readline()
             if not line:
                 raise RuntimeError("Server closed connection")
             
             try:
-                response = json.loads(line.strip())
+                response = json.loads(line.decode().strip())
                 # Check if this is the response to our request
                 if "id" in response and response.get("id") == request.get("id"):
                     return response
@@ -94,16 +93,16 @@ class SyncNutritionMCPClient:
             except json.JSONDecodeError:
                 continue
     
-    def _send_notification(self, notification: Dict):
+    async def _send_notification(self, notification: Dict):
         """Send notification to MCP server"""
         if not self.server_process:
             raise RuntimeError("Server not started")
         
         notification_str = json.dumps(notification) + "\n"
-        self.server_process.stdin.write(notification_str)
-        self.server_process.stdin.flush()
+        self.server_process.stdin.write(notification_str.encode())
+        await self.server_process.stdin.drain()
     
-    def call_tool(self, tool_name: str, arguments: Dict) -> Any:
+    async def call_tool(self, tool_name: str, arguments: Dict) -> Any:
         """Call a tool on the MCP server"""
         request = {
             "jsonrpc": "2.0",
@@ -115,7 +114,7 @@ class SyncNutritionMCPClient:
             }
         }
         
-        response = self._send_request(request)
+        response = await self._send_request(request)
         
         if "error" in response:
             raise RuntimeError(f"MCP tool error: {response['error']}")
@@ -127,7 +126,7 @@ class SyncNutritionMCPClient:
         
         return None
     
-    def calculate_recipe_nutrition(self, recipe: Recipe) -> Dict:
+    async def calculate_recipe_nutrition(self, recipe: Recipe) -> Dict:
         """Calculate recipe nutrition using MCP server"""
         # Convert recipe ingredients to MCP format
         ingredients = []
@@ -142,18 +141,18 @@ class SyncNutritionMCPClient:
                 "quantity_grams": quantity_grams
             })
         
-        return self.call_tool("calculate_recipe_nutrition", {
+        return await self.call_tool("calculate_recipe_nutrition", {
             "ingredients": ingredients
         })
     
-    def stop_server(self):
+    async def stop_server(self):
         """Stop the MCP server process"""
         if self.server_process:
             self.server_process.terminate()
             try:
-                self.server_process.wait(timeout=5.0)
-            except subprocess.TimeoutExpired:
+                await asyncio.wait_for(self.server_process.wait(), timeout=5.0)
+            except asyncio.TimeoutError:
                 self.server_process.kill()
-                self.server_process.wait()
+                await self.server_process.wait()
 
 
