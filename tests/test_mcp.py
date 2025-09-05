@@ -3,7 +3,6 @@
 Test MCP server communication
 """
 
-import asyncio
 import json
 import sys
 import os
@@ -12,35 +11,28 @@ import os
 project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, project_root)
 
-from nutrition_mcp.nutrition_mcp_client import NutritionMCPClient
+from nutrition_mcp.sync_mcp_client import SyncNutritionMCPClient
 
-async def test_mcp():
+def test_mcp():
     """Test basic MCP communication"""
     print("Testing MCP server communication...")
     
-    client = NutritionMCPClient()
+    client = SyncNutritionMCPClient()
     
     try:
         print("Starting server...")
-        await client.start_server()
-        print(" Server started")
+        client.start_server()
+        print("✓ Server started")
         
         print("Testing tool call...")
-        result = await client.call_tool("get_database_stats", {})
-        print(f" Tool call successful: {result}")
+        result = client.call_tool("get_database_stats", {})
+        print(f"✓ Tool call successful: {result}")
         
     except Exception as e:
         print(f"✗ Error: {e}")
-        
-        # Check if server process exists
-        if client.server_process:
-            print("Server process exists, checking stderr...")
-            stderr = await client.server_process.stderr.read()
-            if stderr:
-                print(f"Server stderr: {stderr.decode()}")
     
     finally:
-        await client.stop_server()
+        client.stop_server()
 
 if __name__ == "__main__":
-    asyncio.run(test_mcp())
+    test_mcp()
