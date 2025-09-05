@@ -1,16 +1,17 @@
 #!/usr/bin/env python3
 """
-MCP Client for nutrition operations using JSON-RPC protocol
+Async MCP Client for nutrition operations using async subprocess communication
 """
 
 import json
 import asyncio
 import subprocess
-from typing import Dict, List, Any, Optional
-from src.models import Recipe, NutritionProfile
+from typing import Dict, Any
+from src.models import Recipe
 
-class NutritionMCPClient:
-    """MCP client using JSON-RPC protocol"""
+
+class AsyncNutritionMCPClient:
+    """Async MCP client using async subprocess communication"""
     
     def __init__(self, server_script: str = "nutrition_mcp/mcp_server.py"):
         self.server_script = server_script
@@ -154,55 +155,4 @@ class NutritionMCPClient:
                 self.server_process.kill()
                 await self.server_process.wait()
 
-def compute_nutrition_mcp(recipe: Recipe) -> NutritionProfile:
-    """Compute nutrition using MCP client"""
-    
-    async def _compute():
-        client = NutritionMCPClient()
-        
-        try:
-            await client.start_server()
-            
-            result = await client.calculate_recipe_nutrition(recipe)
-            
-            if "error" in result:
-                raise ValueError(f"MCP nutrition calculation failed: {result['error']}")
-            
-            # Extract nutrition data
-            recipe_nutrition = result.get("recipe_nutrition", {})
-            
-            # Convert to NutritionProfile format
-            nutrition_data = {
-                "calories": recipe_nutrition.get("calories", 0.0),
-                "macros": {
-                    "protein": recipe_nutrition.get("protein", 0.0),
-                    "fat": recipe_nutrition.get("fat", 0.0),
-                    "carbs": recipe_nutrition.get("carbs", 0.0)
-                },
-                "micros": {
-                    "iron_mg": recipe_nutrition.get("iron_mg", 0.0),
-                    "vitamin_c_mg": recipe_nutrition.get("vitamin_c_mg", 0.0),
-                    "calcium_mg": recipe_nutrition.get("calcium_mg", 0.0),
-                    "vitamin_a_mcg": recipe_nutrition.get("vitamin_a_mcg", 0.0),
-                    "vitamin_d_mcg": recipe_nutrition.get("vitamin_d_mcg", 0.0),
-                    "vitamin_e_mg": recipe_nutrition.get("vitamin_e_mg", 0.0),
-                    "vitamin_k_mcg": recipe_nutrition.get("vitamin_k_mcg", 0.0),
-                    "thiamin_mg": recipe_nutrition.get("thiamin_mg", 0.0),
-                    "riboflavin_mg": recipe_nutrition.get("riboflavin_mg", 0.0),
-                    "niacin_mg": recipe_nutrition.get("niacin_mg", 0.0),
-                    "vitamin_b6_mg": recipe_nutrition.get("vitamin_b6_mg", 0.0),
-                    "folate_mcg": recipe_nutrition.get("folate_mcg", 0.0),
-                    "vitamin_b12_mcg": recipe_nutrition.get("vitamin_b12_mcg", 0.0),
-                    "zinc_mg": recipe_nutrition.get("zinc_mg", 0.0),
-                    "magnesium_mg": recipe_nutrition.get("magnesium_mg", 0.0),
-                    "potassium_mg": recipe_nutrition.get("potassium_mg", 0.0),
-                    "sodium_mg": recipe_nutrition.get("sodium_mg", 0.0)
-                }
-            }
-            
-            return NutritionProfile.model_validate(nutrition_data)
-            
-        finally:
-            await client.stop_server()
-    
-    return asyncio.run(_compute())
+

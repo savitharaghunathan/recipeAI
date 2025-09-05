@@ -10,31 +10,27 @@ import os
 project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, project_root)
 
-import asyncio
 from src.models import Recipe, Ingredient
 from src.nutrition import compute_nutrition
-from nutrition_mcp.nutrition_mcp_client import NutritionMCPClient
+from nutrition_mcp.sync_mcp_client import SyncNutritionMCPClient
 
 def test_mcp_server_connection():
     """Test basic MCP server connection"""
     print("Testing MCP server connection...")
     
-    async def _test():
-        client = NutritionMCPClient()
-        try:
-            await client.start_server()
-            result = await client.call_tool("get_database_stats", {})
-            assert "database_statistics" in result
-            assert result["database_statistics"]["total_foods"] > 300
-            print(" MCP server connection successful")
-            return True
-        except Exception as e:
-            print(f" MCP server connection failed: {e}")
-            return False
-        finally:
-            await client.stop_server()
-    
-    return asyncio.run(_test())
+    client = SyncNutritionMCPClient()
+    try:
+        client.start_server()
+        result = client.call_tool("get_database_stats", {})
+        assert "database_statistics" in result
+        assert result["database_statistics"]["total_foods"] > 300
+        print("✓ MCP server connection successful")
+        return True
+    except Exception as e:
+        print(f"✗ MCP server connection failed: {e}")
+        return False
+    finally:
+        client.stop_server()
 
 def test_recipe_nutrition_calculation():
     """Test complete recipe nutrition calculation"""
@@ -72,60 +68,54 @@ def test_ingredient_lookup():
     """Test individual ingredient lookup"""
     print("Testing ingredient lookup...")
     
-    async def _test():
-        client = NutritionMCPClient()
-        try:
-            await client.start_server()
-            
-            # Test finding coconut milk
-            result = await client.call_tool("find_ingredient", {
-                "ingredient_name": "coconut milk",
-                "max_results": 3
-            })
-            
-            assert "results_found" in result
-            assert result["results_found"] > 0
-            assert "matches" in result
-            
-            print(f" Found {result['results_found']} matches for coconut milk")
-            return True
-            
-        except Exception as e:
-            print(f" Ingredient lookup failed: {e}")
-            return False
-        finally:
-            await client.stop_server()
-    
-    return asyncio.run(_test())
+    client = SyncNutritionMCPClient()
+    try:
+        client.start_server()
+        
+        # Test finding coconut milk
+        result = client.call_tool("find_ingredient", {
+            "ingredient_name": "coconut milk",
+            "max_results": 3
+        })
+        
+        assert "results_found" in result
+        assert result["results_found"] > 0
+        assert "matches" in result
+        
+        print(f"✓ Found {result['results_found']} matches for coconut milk")
+        return True
+        
+    except Exception as e:
+        print(f"✗ Ingredient lookup failed: {e}")
+        return False
+    finally:
+        client.stop_server()
 
 def test_database_stats():
     """Test database statistics"""
     print("Testing database statistics...")
     
-    async def _test():
-        client = NutritionMCPClient()
-        try:
-            await client.start_server()
-            
-            result = await client.call_tool("get_database_stats", {})
-            stats = result["database_statistics"]
-            
-            assert stats["total_foods"] > 300
-            assert stats["foods_by_source"]["usda"] > 300
-            assert stats["foods_with_protein_data"] > 300
-            
-            print(f"✓ Database has {stats['total_foods']} foods")
-            print(f"  USDA foods: {stats['foods_by_source']['usda']}")
-            print(f"  LLM estimates: {stats['foods_by_source']['llm_estimate']}")
-            return True
-            
-        except Exception as e:
-            print(f" Database stats failed: {e}")
-            return False
-        finally:
-            await client.stop_server()
-    
-    return asyncio.run(_test())
+    client = SyncNutritionMCPClient()
+    try:
+        client.start_server()
+        
+        result = client.call_tool("get_database_stats", {})
+        stats = result["database_statistics"]
+        
+        assert stats["total_foods"] > 300
+        assert stats["foods_by_source"]["usda"] > 300
+        assert stats["foods_with_protein_data"] > 300
+        
+        print(f"✓ Database has {stats['total_foods']} foods")
+        print(f"  USDA foods: {stats['foods_by_source']['usda']}")
+        print(f"  LLM estimates: {stats['foods_by_source']['llm_estimate']}")
+        return True
+        
+    except Exception as e:
+        print(f"✗ Database stats failed: {e}")
+        return False
+    finally:
+        client.stop_server()
 
 def run_all_tests():
     """Run all nutrition system tests"""
