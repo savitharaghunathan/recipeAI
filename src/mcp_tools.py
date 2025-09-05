@@ -15,6 +15,7 @@ class MCPClientManager:
     
     _instance = None
     _client: Optional[AsyncNutritionMCPClient] = None
+    _nest_asyncio_applied = False
     
     def __new__(cls):
         if cls._instance is None:
@@ -24,6 +25,10 @@ class MCPClientManager:
     @classmethod
     async def start_server(cls):
         """Start MCP server and client"""
+        if not cls._nest_asyncio_applied:
+            nest_asyncio.apply()
+            cls._nest_asyncio_applied = True
+            
         if cls._client is None:
             cls._client = AsyncNutritionMCPClient()
             await cls._client.start_server()
@@ -60,16 +65,18 @@ class FindIngredientTool(BaseTool):
             ingredient_name = params.get("ingredient_name")
             max_results = params.get("max_results", 5)
             
-            client = MCPClientManager.get_client()
-            # Use nest_asyncio to allow nested event loops
-            nest_asyncio.apply()
-            result = asyncio.run(client.call_tool(
-                "find_ingredient", 
-                {"ingredient_name": ingredient_name, "max_results": max_results}
-            ))
-            return str(result)
+            return asyncio.run(self._find_ingredient_async(ingredient_name, max_results))
         except Exception as e:
             return f"Error finding ingredient: {str(e)}"
+    
+    async def _find_ingredient_async(self, ingredient_name: str, max_results: int) -> str:
+        """Async implementation for finding ingredient nutrition data"""
+        client = MCPClientManager.get_client()
+        result = await client.call_tool(
+            "find_ingredient", 
+            {"ingredient_name": ingredient_name, "max_results": max_results}
+        )
+        return str(result)
 
 
 class CalculateRecipeNutritionTool(BaseTool):
@@ -99,15 +106,18 @@ class CalculateRecipeNutritionTool(BaseTool):
             if isinstance(ingredients_data, str):
                 ingredients_data = json.loads(ingredients_data)
                 
-            client = MCPClientManager.get_client()
-            nest_asyncio.apply()
-            result = asyncio.run(client.call_tool(
-                "calculate_recipe_nutrition",
-                {"ingredients": ingredients_data}
-            ))
-            return str(result)
+            return asyncio.run(self._calculate_nutrition_async(ingredients_data))
         except Exception as e:
             return f"Error calculating recipe nutrition: {str(e)}"
+    
+    async def _calculate_nutrition_async(self, ingredients_data: list) -> str:
+        """Async implementation for calculating recipe nutrition"""
+        client = MCPClientManager.get_client()
+        result = await client.call_tool(
+            "calculate_recipe_nutrition",
+            {"ingredients": ingredients_data}
+        )
+        return str(result)
 
 
 class GetHighProteinFoodsTool(BaseTool):
@@ -126,15 +136,18 @@ class GetHighProteinFoodsTool(BaseTool):
             
             min_protein = params.get("min_protein", 20.0)
             
-            client = MCPClientManager.get_client()
-            nest_asyncio.apply()
-            result = asyncio.run(client.call_tool(
-                "get_high_protein_foods",
-                {"min_protein": min_protein}
-            ))
-            return str(result)
+            return asyncio.run(self._get_high_protein_async(min_protein))
         except Exception as e:
             return f"Error getting high protein foods: {str(e)}"
+    
+    async def _get_high_protein_async(self, min_protein: float) -> str:
+        """Async implementation for getting high protein foods"""
+        client = MCPClientManager.get_client()
+        result = await client.call_tool(
+            "get_high_protein_foods",
+            {"min_protein": min_protein}
+        )
+        return str(result)
 
 
 class SearchIngredientsTool(BaseTool):
@@ -153,15 +166,18 @@ class SearchIngredientsTool(BaseTool):
             
             description = params.get("description")
             
-            client = MCPClientManager.get_client()
-            nest_asyncio.apply()
-            result = asyncio.run(client.call_tool(
-                "search_ingredients",
-                {"description": description}
-            ))
-            return str(result)
+            return asyncio.run(self._search_ingredients_async(description))
         except Exception as e:
             return f"Error searching ingredients: {str(e)}"
+    
+    async def _search_ingredients_async(self, description: str) -> str:
+        """Async implementation for searching ingredients by description"""
+        client = MCPClientManager.get_client()
+        result = await client.call_tool(
+            "search_ingredients",
+            {"description": description}
+        )
+        return str(result)
 
 
 def get_nutrition_tools():

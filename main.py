@@ -12,13 +12,11 @@ from src.mcp_tools import MCPClientManager
 def main():
     parser = argparse.ArgumentParser(description="Generate a recipe and nutrition profile.")
     
-    # Mode selection
     parser.add_argument(
         "--mode", choices=["cuisine", "ingredient"], default="cuisine",
         help="Recipe generation mode: 'cuisine' (traditional) or 'ingredient' (AI agent-based)"
     )
     
-    # Cuisine-based mode arguments
     parser.add_argument(
         "--cuisine", 
         help="Cuisine type (e.g., Indian, Italian, Mexican) - required for cuisine mode"
@@ -32,7 +30,6 @@ def main():
         help="Dietary needs (e.g., vegan, vegetarian, gluten-free)"
     )
     
-    # Ingredient-based mode arguments
     parser.add_argument(
         "--request",
         help="Natural language recipe request (e.g., 'high protein vegetarian recipe with potatoes') - required for ingredient mode"
@@ -44,7 +41,6 @@ def main():
     
     args = parser.parse_args()
     
-    # Validate arguments based on mode
     if args.mode == "cuisine":
         if not args.cuisine or not args.max_prep_time:
             parser.error("Cuisine mode requires --cuisine and --max-prep-time")
@@ -54,7 +50,17 @@ def main():
 
 
     if args.mode == "cuisine":
-        # Traditional cuisine-based workflow
+        asyncio.run(run_cuisine_mode(args))
+        
+    elif args.mode == "ingredient":
+        asyncio.run(run_ingredient_mode(args))
+
+
+async def run_cuisine_mode(args):
+    """Run traditional cuisine-based recipe generation"""
+    try:
+        await MCPClientManager.start_server()
+        
         constraints = UserNeeds(
             cuisine=args.cuisine,
             max_prep_time=args.max_prep_time,
@@ -64,43 +70,6 @@ def main():
         recipe = generate_recipe(plan)
         nutrition = compute_nutrition(recipe)
         
-    elif args.mode == "ingredient":
-        # New ingredient-based workflow with AI agents
-        asyncio.run(run_ingredient_mode(args))
-        return
-    
-    # Format and output results (cuisine mode)
-    formatted_nutrition = {
-        "calories": f"{nutrition.calories} kcal",
-        "macros": {k: f"{v} g" for k, v in nutrition.macros.items()},
-        "micros": {k: f"{v} mg" for k, v in nutrition.micros.items()},
-    }
-
-    output = {
-        "plan": plan.model_dump(),
-        "recipe": recipe.model_dump(),
-        "nutrition": formatted_nutrition,
-    }
-    print(json.dumps(output, indent=2))
-
-
-async def run_ingredient_mode(args):
-    """Run ingredient-based recipe generation with AI agents"""
-    try:
-        # Start MCP server
-        await MCPClientManager.start_server()
-        
-        # Generate plan using ingredient planner agent
-        plan = generate_ingredient_plan(args.request)
-        
-        # Generate recipe using nutrition-aware chef
-        nutrition_goals = args.nutrition_goals or "balanced nutrition"
-        recipe = generate_nutrition_aware_recipe(plan, nutrition_goals)
-        
-        # Calculate final nutrition
-        nutrition = compute_nutrition(recipe)
-        
-        # Format and output results
         formatted_nutrition = {
             "calories": f"{nutrition.calories} kcal",
             "macros": {k: f"{v} g" for k, v in nutrition.macros.items()},
@@ -115,7 +84,35 @@ async def run_ingredient_mode(args):
         print(json.dumps(output, indent=2))
         
     finally:
-        # Always stop MCP server
+        await MCPClientManager.stop_server()
+
+
+async def run_ingredient_mode(args):
+    """Run ingredient-based recipe generation with AI agents"""
+    try:
+        await MCPClientManager.start_server()
+        
+        plan = generate_ingredient_plan(args.request)
+        
+        nutrition_goals = args.nutrition_goals or "balanced nutrition"
+        recipe = generate_nutrition_aware_recipe(plan, nutrition_goals)
+        
+        nutrition = compute_nutrition(recipe)
+        
+        formatted_nutrition = {
+            "calories": f"{nutrition.calories} kcal",
+            "macros": {k: f"{v} g" for k, v in nutrition.macros.items()},
+            "micros": {k: f"{v} mg" for k, v in nutrition.micros.items()},
+        }
+
+        output = {
+            "plan": plan.model_dump(),
+            "recipe": recipe.model_dump(),
+            "nutrition": formatted_nutrition,
+        }
+        print(json.dumps(output, indent=2))
+        
+    finally:
         await MCPClientManager.stop_server()
 
 if __name__ == "__main__":
