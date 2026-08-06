@@ -1,0 +1,17 @@
+.venv/
+.git/
+.gitignore
+.vscode/
+.env
+tests/
+docs/
+data/complete_nutrition_database.json
+*.pyc
+__pycache__/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+dist/
+build/
+images/
+k8s/

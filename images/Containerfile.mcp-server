@@ -1,0 +1,18 @@
+FROM python:3.13-slim
+
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
+
+WORKDIR /app
+
+COPY pyproject.toml uv.lock LICENSE README.md ./
+RUN uv sync --frozen --no-dev
+
+COPY src/ src/
+COPY nutrition_mcp/ nutrition_mcp/
+COPY database/ database/
+COPY utils/ utils/
+COPY data/nutrition.json data/nutrition.json
+
+EXPOSE 8080
+
+ENTRYPOINT [".venv/bin/python", "-m", "nutrition_mcp.mcp_http_server"]
