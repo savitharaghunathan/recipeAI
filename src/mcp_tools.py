@@ -22,6 +22,8 @@ class MCPClientManager:
 
     @classmethod
     async def start_server(cls):
+        if cls._client is not None:
+            return
         mcp_server_url = os.environ.get("MCP_SERVER_URL")
 
         if mcp_server_url:
