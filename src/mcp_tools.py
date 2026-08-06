@@ -1,92 +1,90 @@
 """
-MCP wrapper for nutrition tools
+MCP wrapper for nutrition tools — supports both stdio (local) and HTTP (K8s) transports.
 """
 
 import json
-import asyncio
-from nutrition_mcp.mcp_client import AsyncNutritionMCPClient
+import os
 from langchain.tools import BaseTool
-from typing import Any, Dict, List, Optional
-import nest_asyncio
+from typing import Any, Dict, Optional
 
 
 class MCPClientManager:
-    """Singleton manager for async MCP client"""
-    
+    """Singleton manager for MCP client — stdio or HTTP based on MCP_SERVER_URL env var."""
+
     _instance = None
-    _client: Optional[AsyncNutritionMCPClient] = None
-    _nest_asyncio_applied = False
-    
+    _client = None
+    _transport = None
+
     def __new__(cls):
         if cls._instance is None:
             cls._instance = super().__new__(cls)
         return cls._instance
-    
+
     @classmethod
     async def start_server(cls):
-        """Start MCP server and client"""
-        if not cls._nest_asyncio_applied:
-            nest_asyncio.apply()
-            cls._nest_asyncio_applied = True
-            
-        if cls._client is None:
+        mcp_server_url = os.environ.get("MCP_SERVER_URL")
+
+        if mcp_server_url:
+            from nutrition_mcp.mcp_http_client import AsyncHTTPNutritionMCPClient
+            cls._client = AsyncHTTPNutritionMCPClient(mcp_server_url)
+            await cls._client.connect()
+            cls._transport = "http"
+        else:
+            from nutrition_mcp.mcp_client import AsyncNutritionMCPClient
             cls._client = AsyncNutritionMCPClient()
             await cls._client.start_server()
-    
+            cls._transport = "stdio"
+
     @classmethod
     async def stop_server(cls):
-        """Stop MCP server and client"""
         if cls._client is not None:
-            await cls._client.stop_server()
+            if cls._transport == "http":
+                await cls._client.close()
+            else:
+                await cls._client.stop_server()
             cls._client = None
-    
+            cls._transport = None
+
     @classmethod
-    def get_client(cls) -> AsyncNutritionMCPClient:
-        """Get the running MCP client"""
+    def get_client(cls):
         if cls._client is None:
             raise RuntimeError("MCP client not started. Call start_server() first.")
         return cls._client
 
 
 class FindIngredientTool(BaseTool):
-    """Tool to find nutrition data for ingredients using fuzzy matching"""
-    
     name: str = "find_ingredient"
     description: str = "Find nutrition data for an ingredient using fuzzy matching. Returns matches with nutrition information."
-    
+
     def _run(self, tool_input) -> str:
-        """Find ingredient nutrition data"""
+        raise NotImplementedError("Use _arun for async execution")
+
+    async def _arun(self, tool_input) -> str:
         try:
             if isinstance(tool_input, str):
                 params = json.loads(tool_input)
             else:
                 params = tool_input
-            
             ingredient_name = params.get("ingredient_name")
             max_results = params.get("max_results", 5)
-            
-            return asyncio.run(self._find_ingredient_async(ingredient_name, max_results))
+            client = MCPClientManager.get_client()
+            result = await client.call_tool(
+                "find_ingredient",
+                {"ingredient_name": ingredient_name, "max_results": max_results},
+            )
+            return str(result)
         except Exception as e:
             return f"Error finding ingredient: {str(e)}"
-    
-    async def _find_ingredient_async(self, ingredient_name: str, max_results: int) -> str:
-        """Async implementation for finding ingredient nutrition data"""
-        client = MCPClientManager.get_client()
-        result = await client.call_tool(
-            "find_ingredient", 
-            {"ingredient_name": ingredient_name, "max_results": max_results}
-        )
-        return str(result)
 
 
 class CalculateRecipeNutritionTool(BaseTool):
-    """Tool to calculate total nutrition for a recipe with ingredients and quantities"""
-    
     name: str = "calculate_recipe_nutrition"
     description: str = "Calculate total nutrition for a recipe. Input should be a list of ingredients with names and quantities in grams."
-    
+
     def _run(self, tool_input) -> str:
-        """Calculate recipe nutrition"""
+        raise NotImplementedError("Use _arun for async execution")
+
+    async def _arun(self, tool_input) -> str:
         try:
             if isinstance(tool_input, str):
                 try:
@@ -102,89 +100,67 @@ class CalculateRecipeNutritionTool(BaseTool):
                     ingredients_data = tool_input
                 else:
                     ingredients_data = tool_input.get("ingredients", tool_input)
-            
             if isinstance(ingredients_data, str):
                 ingredients_data = json.loads(ingredients_data)
-                
-            return asyncio.run(self._calculate_nutrition_async(ingredients_data))
+            client = MCPClientManager.get_client()
+            result = await client.call_tool(
+                "calculate_recipe_nutrition", {"ingredients": ingredients_data}
+            )
+            return str(result)
         except Exception as e:
             return f"Error calculating recipe nutrition: {str(e)}"
-    
-    async def _calculate_nutrition_async(self, ingredients_data: list) -> str:
-        """Async implementation for calculating recipe nutrition"""
-        client = MCPClientManager.get_client()
-        result = await client.call_tool(
-            "calculate_recipe_nutrition",
-            {"ingredients": ingredients_data}
-        )
-        return str(result)
 
 
 class GetHighProteinFoodsTool(BaseTool):
-    """Tool to find foods with high protein content"""
-    
     name: str = "get_high_protein_foods"
     description: str = "Find foods with protein content above a specified threshold. Useful for suggesting high-protein ingredients."
-    
+
     def _run(self, tool_input) -> str:
-        """Get high protein foods"""
+        raise NotImplementedError("Use _arun for async execution")
+
+    async def _arun(self, tool_input) -> str:
         try:
             if isinstance(tool_input, str):
                 params = json.loads(tool_input)
             else:
                 params = tool_input
-            
             min_protein = params.get("min_protein", 20.0)
-            
-            return asyncio.run(self._get_high_protein_async(min_protein))
+            client = MCPClientManager.get_client()
+            result = await client.call_tool(
+                "get_high_protein_foods", {"min_protein": min_protein}
+            )
+            return str(result)
         except Exception as e:
             return f"Error getting high protein foods: {str(e)}"
-    
-    async def _get_high_protein_async(self, min_protein: float) -> str:
-        """Async implementation for getting high protein foods"""
-        client = MCPClientManager.get_client()
-        result = await client.call_tool(
-            "get_high_protein_foods",
-            {"min_protein": min_protein}
-        )
-        return str(result)
 
 
 class SearchIngredientsTool(BaseTool):
-    """Tool to search ingredients by description keywords"""
-    
     name: str = "search_ingredients"
     description: str = "Search for ingredients using keywords in food descriptions. Useful for finding specific types of foods."
-    
+
     def _run(self, tool_input) -> str:
-        """Search ingredients by description"""
+        raise NotImplementedError("Use _arun for async execution")
+
+    async def _arun(self, tool_input) -> str:
         try:
             if isinstance(tool_input, str):
                 params = json.loads(tool_input)
             else:
                 params = tool_input
-            
             description = params.get("description")
-            
-            return asyncio.run(self._search_ingredients_async(description))
+            client = MCPClientManager.get_client()
+            result = await client.call_tool(
+                "search_ingredients", {"description": description}
+            )
+            return str(result)
         except Exception as e:
             return f"Error searching ingredients: {str(e)}"
-    
-    async def _search_ingredients_async(self, description: str) -> str:
-        """Async implementation for searching ingredients by description"""
-        client = MCPClientManager.get_client()
-        result = await client.call_tool(
-            "search_ingredients",
-            {"description": description}
-        )
-        return str(result)
 
 
 def get_nutrition_tools():
-    """Get all nutrition tools for LangChain agents"""
     return [
         FindIngredientTool(),
         CalculateRecipeNutritionTool(),
         GetHighProteinFoodsTool(),
-        SearchIngredientsTool()
+        SearchIngredientsTool(),
     ]
