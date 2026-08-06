@@ -1,0 +1,114 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: recipeai-pipeline-
+  namespace: recipeai
+spec:
+  entrypoint: recipe-pipeline
+  arguments:
+    parameters:
+      - name: mode
+        value: "cuisine"
+      - name: cuisine
+        value: "italian"
+      - name: max-prep-time
+        value: "30"
+      - name: dietary-needs
+        value: ""
+      - name: request
+        value: ""
+      - name: nutrition-goals
+        value: ""
+
+  templates:
+    - name: recipe-pipeline
+      steps:
+        - - name: plan
+            template: planner
+        - - name: cook
+            template: chef
+        - - name: nutrition
+            template: nutrition-agent
+
+    - name: planner
+      container:
+        image: recipeai-planner:latest
+        imagePullPolicy: Never
+        command: [".venv/bin/python", "-m", "stages.plan_stage"]
+        args:
+          - "--mode"
+          - "{{workflow.parameters.mode}}"
+          - "--cuisine"
+          - "{{workflow.parameters.cuisine}}"
+          - "--max-prep-time"
+          - "{{workflow.parameters.max-prep-time}}"
+          - "--dietary-needs"
+          - "{{workflow.parameters.dietary-needs}}"
+          - "--request"
+          - "{{workflow.parameters.request}}"
+          - "--nutrition-goals"
+          - "{{workflow.parameters.nutrition-goals}}"
+        env:
+          - name: OPENAI_API_KEY
+            valueFrom:
+              secretKeyRef:
+                name: recipeai-secrets
+                key: openai-api-key
+          - name: MCP_SERVER_URL
+            value: "http://recipeai-mcp-server.recipeai.svc.cluster.local:8080/mcp"
+          - name: OUTPUT_DIR
+            value: "/output"
+      outputs:
+        artifacts:
+          - name: plan
+            path: /output/plan.json
+          - name: plan-metadata
+            path: /output/plan_metadata.json
+
+    - name: chef
+      inputs:
+        artifacts:
+          - name: plan
+            path: /input/plan.json
+            from: "{{steps.plan.outputs.artifacts.plan}}"
+          - name: plan-metadata
+            path: /input/plan_metadata.json
+            from: "{{steps.plan.outputs.artifacts.plan-metadata}}"
+      container:
+        image: recipeai-chef:latest
+        imagePullPolicy: Never
+        env:
+          - name: OPENAI_API_KEY
+            valueFrom:
+              secretKeyRef:
+                name: recipeai-secrets
+                key: openai-api-key
+          - name: INPUT_DIR
+            value: "/input"
+          - name: OUTPUT_DIR
+            value: "/output"
+      outputs:
+        artifacts:
+          - name: recipe
+            path: /output/recipe.json
+
+    - name: nutrition-agent
+      inputs:
+        artifacts:
+          - name: recipe
+            path: /input/recipe.json
+            from: "{{steps.cook.outputs.artifacts.recipe}}"
+      container:
+        image: recipeai-nutrition:latest
+        imagePullPolicy: Never
+        env:
+          - name: MCP_SERVER_URL
+            value: "http://recipeai-mcp-server.recipeai.svc.cluster.local:8080/mcp"
+          - name: INPUT_DIR
+            value: "/input"
+          - name: OUTPUT_DIR
+            value: "/output"
+      outputs:
+        artifacts:
+          - name: nutrition
+            path: /output/nutrition.json
