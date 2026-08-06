@@ -1,7 +1,6 @@
 import asyncio
 import json
 import os
-import sys
 
 from src.models import Recipe, NutritionProfile
 from src.nutrition import compute_nutrition

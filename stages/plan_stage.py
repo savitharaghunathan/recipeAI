@@ -2,7 +2,6 @@ import argparse
 import asyncio
 import json
 import os
-import sys
 
 from src.models import UserNeeds
 from src.planner import generate_plan

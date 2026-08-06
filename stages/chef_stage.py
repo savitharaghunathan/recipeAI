@@ -1,6 +1,5 @@
 import json
 import os
-import sys
 
 from src.models import Plan, Recipe
 from src.chef import generate_recipe, generate_nutrition_aware_recipe
