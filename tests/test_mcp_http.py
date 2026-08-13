@@ -80,3 +80,38 @@ async def test_http_client_calculate_recipe_nutrition(mcp_http_server):
         assert result["recipe_nutrition"]["calories"] > 0
     finally:
         await client.close()
+
+
+@pytest.mark.asyncio
+async def test_mcp_client_manager_http_connect_failure_does_not_leak(monkeypatch):
+    """Failed HTTP connect must not leave _client set without _transport."""
+    from src.mcp_tools import MCPClientManager
+
+    MCPClientManager._client = None
+    MCPClientManager._transport = None
+    monkeypatch.setenv("MCP_SERVER_URL", "http://127.0.0.1:9/mcp")
+
+    class FailingHTTPClient:
+        def __init__(self, url):
+            pass
+
+        async def connect(self):
+            raise ConnectionError("unreachable")
+
+        async def close(self):
+            pass
+
+        async def stop_server(self):
+            raise AssertionError("HTTP client has no stop_server()")
+
+    monkeypatch.setattr(
+        "nutrition_mcp.mcp_http_client.AsyncHTTPNutritionMCPClient",
+        FailingHTTPClient,
+    )
+
+    with pytest.raises(ConnectionError, match="unreachable"):
+        await MCPClientManager.start_server()
+
+    assert MCPClientManager._client is None
+    assert MCPClientManager._transport is None
+    await MCPClientManager.stop_server()

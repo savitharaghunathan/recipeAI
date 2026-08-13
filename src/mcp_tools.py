@@ -28,22 +28,29 @@ class MCPClientManager:
 
         if mcp_server_url:
             from nutrition_mcp.mcp_http_client import AsyncHTTPNutritionMCPClient
-            cls._client = AsyncHTTPNutritionMCPClient(mcp_server_url)
-            await cls._client.connect()
+            client = AsyncHTTPNutritionMCPClient(mcp_server_url)
+            await client.connect()
+            cls._client = client
             cls._transport = "http"
         else:
             from nutrition_mcp.mcp_client import AsyncNutritionMCPClient
-            cls._client = AsyncNutritionMCPClient()
-            await cls._client.start_server()
+            client = AsyncNutritionMCPClient()
+            await client.start_server()
+            cls._client = client
             cls._transport = "stdio"
 
     @classmethod
     async def stop_server(cls):
-        if cls._client is not None:
-            if cls._transport == "http":
-                await cls._client.close()
+        if cls._client is None:
+            return
+        client = cls._client
+        transport = cls._transport
+        try:
+            if transport == "http":
+                await client.close()
             else:
-                await cls._client.stop_server()
+                await client.stop_server()
+        finally:
             cls._client = None
             cls._transport = None
 
