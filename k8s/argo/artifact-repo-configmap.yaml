@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: artifact-repositories
+  namespace: recipeai
+  annotations:
+    workflows.argoproj.io/default-artifact-repository: default-artifact-repository
+data:
+  default-artifact-repository: |
+    s3:
+      bucket: recipeai-artifacts
+      endpoint: minio.recipeai.svc.cluster.local:9000
+      insecure: true
+      accessKeySecret:
+        name: minio-credentials
+        key: accesskey
+      secretKeySecret:
+        name: minio-credentials
+        key: secretkey

@@ -80,9 +80,6 @@ target/
 profile_default/
 ipython_config.py
 
-# pyenv
-.python-version
-
 # pipenv
 Pipfile.lock
 
@@ -103,8 +100,10 @@ celerybeat.pid
 # SageMath parsed files
 *.sage.py
 
-# Environments
+# Environments / secrets (commit .env.example only)
 .env
+.env.*
+!.env.example
 .venv
 env/
 venv/
@@ -127,6 +126,9 @@ venv.bak/
 .dmypy.json
 dmypy.json
 
+# Ruff
+.ruff_cache/
+
 # Pyre type checker
 .pyre/
 
@@ -141,6 +143,9 @@ cython_debug/
 
 # VS Code
 .vscode/
+
+# Cursor
+.cursor/
 
 # Vim
 *.swp
@@ -158,15 +163,18 @@ Thumbs.db
 
 # API keys and secrets
 *.key
+*.pem
 secrets.json
-.env.local
-.env.production
 
 # Project specific
 *.json.backup
 temp/
 debug/
 logs/
+*.tmp
 
-# uv
-uv.lock
+# Local kind / kubectl dumps
+kubeconfig*
+*.kubeconfig
+
+# uv.lock and .python-version are tracked for reproducible installs

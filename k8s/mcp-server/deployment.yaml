@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: recipeai-mcp-server
+  namespace: recipeai
+  labels:
+    app: recipeai-mcp-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: recipeai-mcp-server
+  template:
+    metadata:
+      labels:
+        app: recipeai-mcp-server
+    spec:
+      containers:
+        - name: mcp-server
+          image: recipeai-mcp-server:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: 8080
+            initialDelaySeconds: 3
+            periodSeconds: 5
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "256Mi"
+              cpu: "500m"

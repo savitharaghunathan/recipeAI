@@ -103,7 +103,7 @@ async def run_ingredient_mode(args):
         await MCPClientManager.start_server()
         
         try:
-            plan = generate_ingredient_plan(args.request)
+            plan = await generate_ingredient_plan(args.request)
             
             nutrition_goals = args.nutrition_goals or "balanced nutrition"
             recipe = generate_nutrition_aware_recipe(plan, nutrition_goals)
